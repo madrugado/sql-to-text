@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Training outputs and results
+output/
+*.csv
+*.log
+runs/
+checkpoint-*/
