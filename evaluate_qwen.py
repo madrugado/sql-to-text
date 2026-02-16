@@ -161,29 +161,29 @@ SQL: {sql_query}
 
 
 def compute_bleu_score(references: List[str], hypotheses: List[str]) -> Dict[str, float]:
-    """Compute BLEU score between references and hypotheses."""
+    """Compute BLEU score between references and hypotheses.
+
+    Uses standard BLEU-4 with equal weights (0.25, 0.25, 0.25, 0.25).
+    """
     smoothing = SmoothingFunction()
 
     # Tokenize references and hypotheses
     ref_tokens = [nltk.word_tokenize(ref.lower()) for ref in references]
     hyp_tokens = [nltk.word_tokenize(hyp.lower()) for hyp in hypotheses]
 
-    # Calculate BLEU-1 to BLEU-4
-    bleu_scores = {}
-    for n in range(1, 5):
-        weights = tuple([1.0/n] * n + [0.0] * (4-n))
-        try:
-            score = corpus_bleu(
-                [[ref] for ref in ref_tokens],
-                hyp_tokens,
-                weights=weights,
-                smoothing_function=smoothing.method1,
-            )
-            bleu_scores[f"BLEU-{n}"] = score * 100
-        except Exception:
-            bleu_scores[f"BLEU-{n}"] = 0.0
+    # Calculate BLEU-4 with equal weights
+    try:
+        score = corpus_bleu(
+            [[ref] for ref in ref_tokens],
+            hyp_tokens,
+            weights=(0.25, 0.25, 0.25, 0.25),
+            smoothing_function=smoothing.method1,
+        )
+        bleu_score = score * 100
+    except Exception:
+        bleu_score = 0.0
 
-    return bleu_scores
+    return {"BLEU": bleu_score}
 
 
 def compute_chrf_score(references: List[str], hypotheses: List[str]) -> Dict[str, float]:
